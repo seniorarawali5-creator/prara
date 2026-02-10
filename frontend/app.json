@@ -1,0 +1,38 @@
+{
+  "expo": {
+    "name": "PRASHANT",
+    "slug": "prashant-app",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "splash": {
+      "resizeMode": "contain",
+      "backgroundColor": "#5C6BC0"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTabletMode": true,
+      "bundleIdentifier": "com.studybuddy.app"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#5C6BC0"
+      },
+      "package": "com.studybuddy.app"
+    },
+    "web": {},
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow PRASHANT to access your photos",
+          "cameraPermission": "Allow Study Buddy to access your camera"
+        }
+      ]
+    ]
+  }
+}
