@@ -35,6 +35,16 @@ jobs:
     - name: Build APK (split-per-abi)
       run: flutter build apk --split-per-abi --release 2>&1 | tail -50
     
+    - name: List build output directory
+      run: |
+        echo "=== Searching for APK files ==="
+        find build -name "*.apk" -type f
+        echo ""
+        echo "=== Full build/app/outputs structure ==="
+        ls -la build/app/outputs/ 2>/dev/null || echo "build/app/outputs not found"
+        ls -la build/app/outputs/flutter-apk/ 2>/dev/null || echo "flutter-apk not found"
+        ls -la build/app/outputs/apk/ 2>/dev/null || echo "apk dir not found"
+    
     - name: Upload ARM64 APK
       uses: actions/upload-artifact@v4
       with:
