@@ -29,8 +29,11 @@ jobs:
     - name: Get dependencies
       run: flutter pub get
     
+    - name: Clean build directory
+      run: flutter clean
+    
     - name: Build APK (split-per-abi)
-      run: flutter build apk --split-per-abi --release
+      run: flutter build apk --split-per-abi --release 2>&1 | tail -50
     
     - name: Upload ARM64 APK
       uses: actions/upload-artifact@v4

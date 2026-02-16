@@ -5,6 +5,7 @@ publish_to: 'none'
 
 version: 1.0.0+1
 
+# Force fresh build - remove v1 embedding plugins
 environment:
   sdk: '>=3.0.0 <4.0.0'
 
