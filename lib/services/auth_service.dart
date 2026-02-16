@@ -45,13 +45,11 @@ class AuthServiceImpl implements AuthService {
               .eq('id', authResult.user!.id)
               .single();
 
-          if (userDoc != null) {
-            logger.i('✅ Login successful for: $email');
-            return AppUser.fromJson({
-              ...userDoc,
-              'id': authResult.user!.id,
-            });
-          }
+          logger.i('✅ Login successful for: $email');
+          return AppUser.fromJson({
+            ...userDoc,
+            'id': authResult.user!.id,
+          });
         } catch (e) {
           logger.w('⚠️ Could not fetch user profile, creating one: $e');
           
@@ -75,7 +73,7 @@ class AuthServiceImpl implements AuthService {
             return user;
           } catch (createError) {
             logger.e('❌ Error creating user profile: $createError');
-            throw createError;
+            rethrow;
           }
         }
       }
@@ -309,12 +307,10 @@ class AuthServiceImpl implements AuthService {
               .eq('id', currentUser.id)
               .single();
 
-          if (userDoc != null) {
-            return AppUser.fromJson({
-              ...userDoc,
-              'id': currentUser.id,
-            });
-          }
+          return AppUser.fromJson({
+            ...userDoc,
+            'id': currentUser.id,
+          });
         } catch (e) {
           logger.w('User profile not found, creating one');
           
@@ -375,12 +371,10 @@ class AuthServiceImpl implements AuthService {
             .eq('id', supabaseUser.id)
             .single();
 
-        if (userDoc != null) {
-          return AppUser.fromJson({
-            ...userDoc,
-            'id': supabaseUser.id,
-          });
-        }
+        return AppUser.fromJson({
+          ...userDoc,
+          'id': supabaseUser.id,
+        });
       }
       return null;
     } catch (e) {

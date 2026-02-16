@@ -148,11 +148,8 @@ class FriendService {
           .eq('id', userId)
           .single();
 
-      if (user != null) {
-        logger.i('✅ Profile fetched');
-        return AppUser.fromJson(user);
-      }
-      return null;
+      logger.i('✅ Profile fetched');
+      return AppUser.fromJson(user);
     } catch (e) {
       logger.e('❌ Error fetching profile: $e');
       return null;

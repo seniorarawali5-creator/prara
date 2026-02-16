@@ -205,7 +205,7 @@ class _ViewStoryScreenState extends State<ViewStoryScreen> {
                   Row(
                     children: [
                       Icon(Icons.visibility, color: Colors.white, size: 18),
-                      SizedBox(width: 4),
+                      const SizedBox(width: 4),
                       Text(
                         '${story['views'] ?? 0} views',
                         style: TextStyle(color: Colors.white70),
