@@ -1,0 +1,89 @@
+// Firebase Storage Rules for Prashant App
+// Deploy this to Firebase Console > Storage > Rules
+
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    
+    // User profile pictures
+    match /users/{userId}/profile_picture {
+      // User can upload their own profile picture
+      allow write: if request.auth.uid == userId &&
+                      request.resource.contentType.matches('image/.*') &&
+                      request.resource.size < 5 * 1024 * 1024; // 5MB limit
+      
+      // Anyone can read profile pictures
+      allow read: if true;
+    }
+    
+    // Chat attachments
+    match /chats/{chatId}/attachments/{allPaths=**} {
+      // Users in the chat can upload attachments
+      allow write: if request.auth.uid != null &&
+                      request.resource.size < 10 * 1024 * 1024; // 10MB limit
+      
+      // Users in the chat can read attachments
+      allow read: if request.auth.uid != null;
+      
+      // Users can delete their own attachments
+      allow delete: if request.auth.uid == resource.metadata.userId;
+    }
+    
+    // Group chat attachments
+    match /groups/{groupId}/attachments/{allPaths=**} {
+      // Group members can upload attachments
+      allow write: if request.auth.uid != null &&
+                      request.resource.size < 10 * 1024 * 1024; // 10MB limit
+      
+      // Group members can read attachments
+      allow read: if request.auth.uid != null;
+      
+      // Users can delete their own attachments
+      allow delete: if request.auth.uid == resource.metadata.userId;
+    }
+    
+    // Story uploads
+    match /stories/{userId}/{storyId} {
+      // User can upload their own stories
+      allow write: if request.auth.uid == userId &&
+                      request.resource.size < 50 * 1024 * 1024; // 50MB for video/image
+      
+      // Any authenticated user can view stories
+      allow read: if request.auth.uid != null;
+      
+      // User can delete their own stories
+      allow delete: if request.auth.uid == userId;
+    }
+    
+    // Note attachments
+    match /notes/{userId}/{noteId}/attachments/{allPaths=**} {
+      // User can upload attachments to their notes
+      allow write: if request.auth.uid == userId &&
+                      request.resource.size < 10 * 1024 * 1024; // 10MB limit
+      
+      // User can read their own note attachments
+      allow read: if request.auth.uid == userId;
+      
+      // User can delete their own attachments
+      allow delete: if request.auth.uid == userId;
+    }
+    
+    // Temporary uploads (for caching)
+    match /temp/{userId}/{fileName} {
+      // User can upload temporary files
+      allow write: if request.auth.uid == userId &&
+                      request.resource.size < 20 * 1024 * 1024; // 20MB limit
+      
+      // User can read their own temporary files
+      allow read: if request.auth.uid == userId;
+      
+      // User can delete their own temporary files
+      allow delete: if request.auth.uid == userId;
+    }
+    
+    // Deny all other access
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -1,509 +1,385 @@
-# 🏗️ Study Buddy - Architecture & Data Flow
+# Prashant App Architecture & Design Guide
 
-## System Architecture
+## Architecture Overview
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                     MOBILE FRONTEND                          │
-│              (React Native + Expo)                           │
-│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐    │
-│  │  Auth    │  │  Activity│  │ Analytics│  │  Notes   │    │
-│  │ Screens  │  │ Screens  │  │ Screens  │  │ Screens  │    │
-│  └──────────┘  └──────────┘  └──────────┘  └──────────┘    │
-│  ┌──────────┐  ┌──────────┐  ┌──────────┐                  │
-│  │ Memories │  │   Chat   │  │ Friends  │                  │
-│  │ Screens  │  │ Screens  │  │ Screens  │                  │
-│  └──────────┘  └──────────┘  └──────────┘                  │
-│                                                              │
-│  ┌───────────────────────────────────────────────────────┐  │
-│  │          Navigation Layer                             │  │
-│  │  Stack Navigator + Bottom Tab Navigator               │  │
-│  └───────────────────────────────────────────────────────┘  │
-│                                                              │
-│  ┌───────────────────────────────────────────────────────┐  │
-│  │          API Client (Axios)                           │  │
-│  │  - Auto JWT injection                                 │  │
-│  │  - Error handling                                     │  │
-│  │  - Request/response interceptors                      │  │
-│  └───────────────────────────────────────────────────────┘  │
-│                                                              │
-│  ┌───────────────────────────────────────────────────────┐  │
-│  │  State Management (Context API + AsyncStorage)        │  │
-│  │  - AuthContext for user state                         │  │
-│  │  - LocalStorage for token persistence                 │  │
-│  └───────────────────────────────────────────────────────┘  │
-│                                                              │
-│  ┌───────────────────────────────────────────────────────┐  │
-│  │  Real-time Connection (Socket.io)                     │  │
-│  │  - Live chat updates                                  │  │
-│  │  - Typing indicators                                  │  │
-│  └───────────────────────────────────────────────────────┘  │
-└─────────────────────────────────────────────────────────────┘
-                          │
-                          │ HTTP/WebSocket
-                          │
-┌─────────────────────────────────────────────────────────────┐
-│                  BACKEND API SERVER                          │
-│            (Node.js + Express + Socket.io)                  │
-│                                                              │
-│  ┌───────────────────────────────────────────────────────┐  │
-│  │          Express Routes                               │  │
-│  │  ┌──────────┐ ┌──────────┐ ┌──────────┐              │  │
-│  │  │   Auth   │ │Activities│ │  Goals   │              │  │
-│  │  │  Routes  │ │  Routes  │ │  Routes  │              │  │
-│  │  └──────────┘ └──────────┘ └──────────┘              │  │
-│  │  ┌──────────┐ ┌──────────┐ ┌──────────┐              │  │
-│  │  │  Notes   │ │ Memories │ │ Messages │              │  │
-│  │  │  Routes  │ │  Routes  │ │  Routes  │              │  │
-│  │  └──────────┘ └──────────┘ └──────────┘              │  │
-│  │  ┌──────────┐ ┌──────────┐                           │  │
-│  │  │  Users   │ │Analytics │                           │  │
-│  │  │  Routes  │ │  Routes  │                           │  │
-│  │  └──────────┘ └──────────┘                           │  │
-│  └───────────────────────────────────────────────────────┘  │
-│                                                              │
-│  ┌───────────────────────────────────────────────────────┐  │
-│  │          Middleware Stack                             │  │
-│  │  ┌──────────┐ ┌──────────┐ ┌──────────┐              │  │
-│  │  │   CORS   │ │   Auth   │ │ Validation              │  │
-│  │  │ Middleware │ Middleware │ Middleware               │  │
-│  │  └──────────┘ └──────────┘ └──────────┘              │  │
-│  └───────────────────────────────────────────────────────┘  │
-│                                                              │
-│  ┌───────────────────────────────────────────────────────┐  │
-│  │          Socket.io Handler                            │  │
-│  │  - Real-time chat                                     │  │
-│  │  - Typing indicators                                  │  │
-│  │  - Live notifications                                 │  │
-│  └───────────────────────────────────────────────────────┘  │
-│                                                              │
-│  ┌───────────────────────────────────────────────────────┐  │
-│  │          File Upload Handler (Multer)                 │  │
-│  │  - Memory images storage                              │  │
-│  │  - Size validation                                    │  │
-│  │  - MIME type checking                                 │  │
-│  └───────────────────────────────────────────────────────┘  │
-│                                                              │
-│  ┌───────────────────────────────────────────────────────┐  │
-│  │          Service Layer                                │  │
-│  │  - Business logic                                     │  │
-│  │  - Data validation                                    │  │
-│  │  - Error handling                                     │  │
-│  └───────────────────────────────────────────────────────┘  │
-└─────────────────────────────────────────────────────────────┘
-                          │
-                          │ PostgreSQL Driver (pg)
-                          │
-┌─────────────────────────────────────────────────────────────┐
-│                   DATABASE LAYER                            │
-│              (PostgreSQL Database)                          │
-│                                                              │
-│  ┌────────────┐  ┌────────────┐  ┌────────────┐           │
-│  │   users    │  │ activities │  │   goals    │           │
-│  │  (Profiles)│  │  (Logs)    │  │ (Targets)  │           │
-│  └────────────┘  └────────────┘  └────────────┘           │
-│  ┌────────────┐  ┌────────────┐  ┌────────────┐           │
-│  │   notes    │  │ memories   │  │ messages   │           │
-│  │(Materials) │  │  (Photos)  │  │  (Chat)    │           │
-│  └────────────┘  └────────────┘  └────────────┘           │
-│  ┌────────────┐  ┌────────────┐                           │
-│  │  friends   │  │ analytics  │                           │
-│  │(Connections)│  │(Statistics)│                           │
-│  └────────────┘  └────────────┘                           │
-│                                                              │
-│  ┌───────────────────────────────────────────────────────┐ │
-│  │        Indexes & Optimization                         │ │
-│  │  - user_id indexes                                    │ │
-│  │  - date range indexes                                 │ │
-│  │  - foreign key constraints                            │ │
-│  └───────────────────────────────────────────────────────┘ │
-│                                                              │
-│  ┌───────────────────────────────────────────────────────┐ │
-│  │        File System - Uploads                          │ │
-│  │  /uploads/memories/ - Image storage                   │ │
-│  └───────────────────────────────────────────────────────┘ │
-└─────────────────────────────────────────────────────────────┘
-```
-
----
-
-## Data Flow Examples
-
-### 1️⃣ User Sign Up Flow
-
-```
-Frontend (SignupScreen)
-    │
-    ├─ User enters credentials
-    │
-    ├─ Form validation
-    │
-    ├─ Call authAPI.signup()
-    │
-    └─→ Backend (POST /api/auth/signup)
-            │
-            ├─ Validate input data
-            │
-            ├─ Check duplicate email/username
-            │
-            ├─ Hash password with bcryptjs
-            │
-            ├─ Insert into database
-            │
-            ├─ Generate JWT token
-            │
-            └─→ Response with token & user data
-                    │
-                    ├─ Store token in AsyncStorage
-                    │
-                    ├─ Update AuthContext
-                    │
-                    └─→ Navigate to App Tabs
-```
-
-### 2️⃣ Activity Logging Flow
-
-```
-Frontend (HomeScreen)
-    │
-    ├─ User clicks "Add Activity"
-    │
-    ├─ Navigate to AddActivityScreen
-    │
-    ├─ User fills form
-    │
-    ├─ Click "Add Activity"
-    │
-    └─→ API Client (axios)
-            │
-            ├─ Get JWT token from AsyncStorage
-            │
-            ├─ Add Bearer token to header
-            │
-            ├─ POST /api/activities
-            │
-            └─→ Backend Handler
-                    │
-                    ├─ Verify JWT token (AuthMiddleware)
-                    │
-                    ├─ Validate input data
-                    │
-                    ├─ Insert into activities table
-                    │
-                    ├─ Return activity object
-                    │
-                    └─→ Success response
-                            │
-                            ├─ Show success alert
-                            │
-                            ├─ Navigate back
-                            │
-                            └─→ Refresh activities list
-```
-
-### 3️⃣ Real-time Chat Flow
-
-```
-Frontend A (ChatScreen)
-    │
-    ├─ User types message
-    │
-    ├─ Click send
-    │
-    ├─ Create message object
-    │
-    ├─ POST /api/messages
-    │
-    └─→ API Response
-            │
-            ├─ Store message in database
-            │
-            └─→ Socket.io broadcast
-                    │
-                    └─→ Frontend B (Socket listener)
-                            │
-                            ├─ Receive message event
-                            │
-                            ├─ Add to local messages state
-                            │
-                            └─→ Display in chat UI
-```
-
-### 4️⃣ Analytics Generation Flow
-
-```
-Frontend (AnalyticsScreen)
-    │
-    ├─ User opens Analytics
-    │
-    ├─ Trigger loadAnalytics()
-    │
-    │
-    ├─→ Backend (GET /api/analytics/weekly)
-    │       │
-    │       ├─ Get user_id from JWT token
-    │       │
-    │       ├─ Query activities (this week)
-    │       │
-    │       ├─ Calculate totals
-    │       │
-    │       ├─ Group by subject
-    │       │
-    │       ├─ Query goals progress
-    │       │
-    │       └─→ Return analytics data
-    │
-    │
-    │
-    ├─→ Backend (GET /api/analytics/monthly)
-    │       │
-    │       └─→ Return monthly data
-    │
-    │
-    ├─→ Backend (GET /api/analytics/subject)
-    │       │
-    │       └─→ Return subject breakdown
-    │
-    └─→ Frontend Updates
-            │
-            ├─ Update state with data
-            │
-            ├─ Render charts (Chart Kit)
-            │
-            └─→ Display analytics
-```
-
-### 5️⃣ Image Upload (Memory) Flow
-
-```
-Frontend (MemoriesScreen)
-    │
-    ├─ User clicks "Add Memory"
-    │
-    ├─ Open image picker
-    │
-    ├─ User selects image
-    │
-    ├─ Create FormData object
-    │
-    ├─ Add image binary data
-    │
-    ├─ Add metadata (title, description)
-    │
-    └─→ POST /api/memories (multipart/form-data)
-            │
-            ├─ Multer middleware processes
-            │
-            ├─ Save file to /uploads/memories/
-            │
-            ├─ Insert record in memories table
-            │
-            └─→ Response with image URL
-                    │
-                    ├─ Add to memories list
-                    │
-                    └─→ Display thumbnail
-```
-
----
-
-## Authentication Flow
+The Prashant app follows a clean, scalable architecture pattern with clear separation of concerns.
 
 ```
 ┌─────────────────────────────────────────────────┐
-│            JWT Authentication Flow              │
+│              UI Layer (Screens)                 │
+│  Splash → Auth → Navigation → Features          │
+└────────────┬────────────────────────────────────┘
+             │
+             ▼
+┌─────────────────────────────────────────────────┐
+│         State Management Layer (GetX)           │
+│  Controllers, Bindings, Routes                  │
+└────────────┬────────────────────────────────────┘
+             │
+             ▼
+┌─────────────────────────────────────────────────┐
+│           Service Layer (Business Logic)        │
+│  AuthService, ChatService, AnalyticsService    │
+└────────────┬────────────────────────────────────┘
+             │
+             ▼
+┌─────────────────────────────────────────────────┐
+│         Data Layer (Models & Storage)           │
+│  Firebase, Firestore, Local Storage             │
 └─────────────────────────────────────────────────┘
-
-1. Sign In
-   ├─ POST /api/auth/signin
-   ├─ Email + Password
-   ├─ Backend verifies password
-   ├─ Generate JWT token (valid 7 days)
-   └─ Return token + user data
-
-2. Store Token
-   ├─ Save to AsyncStorage (key: "authToken")
-   ├─ Available for entire session
-   └─ Persists app restart
-
-3. API Requests
-   ├─ Axios interceptor gets token
-   ├─ Add to Authorization header
-   ├─ Format: "Bearer <token>"
-   └─ Send with request
-
-4. Backend Verification
-   ├─ Middleware verifies token
-   ├─ Decode JWT payload
-   ├─ Extract userId
-   ├─ User ID added to request object
-   └─ Proceed with request
-
-5. Token Expiry
-   ├─ Token expires after 7 days
-   ├─ Backend returns 401 error
-   ├─ App catches error
-   ├─ Redirect to sign in
-   └─ User must re-authenticate
-
-6. Sign Out
-   ├─ Clear AsyncStorage token
-   ├─ Update AuthContext
-   ├─ Navigate to Auth Stack
-   └─ Fresh start
 ```
+
+## Project Structure Breakdown
+
+### 1. **Main Entry Point** (`lib/main.dart`)
+- App initialization
+- GetX configuration
+- Route setup
+- Theme configuration
+
+### 2. **Configuration** (`lib/config/`)
+- `theme.dart`: Color schemes and typography
+- `app_routes.dart`: Route definitions and navigation
+
+### 3. **Models** (`lib/models/`)
+Data classes representing app entities:
+- `user_model.dart`: User information
+- `study_session_model.dart`: Study tracking data
+- `chat_message_model.dart`: Chat messages
+- `note_model.dart`: Notes with metadata
+- `story_model.dart`: Stories with expiry
+- `friend_request_model.dart`: Friend requests
+
+### 4. **Screens** (`lib/screens/`)
+UI implementation organized by feature:
+```
+screens/
+├── auth/
+│   ├── splash_screen.dart          # Initial loading screen
+│   ├── login_options_screen.dart   # Admin vs User choice
+│   ├── login_screen.dart           # User login
+│   ├── signup_screen.dart          # User registration
+│   ├── forgot_password_screen.dart # Password recovery
+│   └── admin_login_screen.dart     # Admin authentication
+├── home/
+│   └── home_screen.dart            # Main dashboard
+├── chat/
+│   └── chat_screen.dart            # Direct & group messaging
+├── friends/
+│   └── friends_screen.dart         # User discovery & management
+├── notes/
+│   └── notes_screen.dart           # Note management
+├── analytics/
+│   └── analytics_screen.dart       # Analytics & insights
+├── stories/
+│   └── stories_screen.dart         # 24-hour stories
+├── settings/
+│   └── settings_screen.dart        # User preferences
+├── admin/
+│   └── admin_dashboard_screen.dart # Admin analytics
+└── main_navigation_screen.dart     # Bottom navigation controller
+```
+
+### 5. **Services** (`lib/services/`)
+Business logic layer:
+- `auth_service.dart`: Authentication & authorization
+- `chat_service.dart`: Messaging functionality
+- `analytics_service.dart`: Data analysis & insights
+
+### 6. **Widgets** (`lib/widgets/`)
+Reusable UI components (to be created as needed):
+- Custom buttons
+- Cards
+- Dialogs
+- Loading indicators
+
+### 7. **Constants** (`lib/constants/`)
+- `app_colors.dart`: Color palettes
+- `app_strings.dart`: UI text strings
+- `assets.dart`: Asset path constants
+
+### 8. **Utils** (`lib/utils/`)
+Utility functions:
+- `formatters.dart`: Date, time, and number formatting
+
+## Design Patterns
+
+### 1. **Model-View-ViewModel (MVVM) Pattern**
+- Models: Data classes with serialization
+- Views: Stateful/Stateless widgets
+- ViewModels: GetX Controllers (future implementation)
+
+### 2. **Service Layer Pattern**
+- Abstract service interfaces
+- Concrete implementations
+- Dependency injection via GetX
+
+### 3. **Factory Pattern**
+- Model factories for JSON parsing
+- Service implementations
+
+### 4. **Singleton Pattern**
+- GetX services as singletons
+- Shared preferences for local storage
+
+## Navigation Flow
+
+### Authentication Flow
+```
+SplashScreen
+    ↓
+LoginOptionsScreen
+    ├→ LoginScreen → Home
+    ├→ AdminLoginScreen → AdminDashboard
+    └→ SignUpScreen → Home
+
+ForgotPasswordScreen
+    ↓
+PasswordResetScreen
+    ↓
+LoginScreen
+```
+
+### Main App Flow (After Auth)
+```
+MainNavigationScreen (7-Tab Navigation)
+├── Home (Daily Stats & Pie Charts)
+├── Chat (Direct & Group Messaging)
+├── Friends (User Discovery & Requests)
+├── Notes (Create & Share Notes)
+├── Stories (24-Hour Stories)
+├── Analytics (Weekly/Monthly Comparisons)
+└── Settings (Profile & Preferences)
+```
+
+### Tab Navigation Structure
+```
+┌────────────────────────────────────────┐
+│         MainNavigationScreen           │
+│  (Manages Bottom Navigation Index)     │
+└────────┬───────────────────────────────┘
+         │
+    ┌────┴────┬──────┬────────┬───────┬─────────┬──────────┐
+    │          │      │        │       │         │          │
+   Home      Chat  Friends   Notes  Stories  Analytics  Settings
+```
+
+## State Management (GetX)
+
+### Current Implementation
+- Navigation via `Get.toNamed()`
+- SnackBars via `Get.snackbar()`
+- Dialogs via `Get.dialog()`
+
+### Future Implementation (Recommended)
+```dart
+// Example Controller Structure
+class HomeController extends GetxController {
+  var screenTime = 0.0.obs;
+  var studyHours = 0.0.obs;
+  
+  void updateStudyHours(double hours) {
+    studyHours.value = hours;
+    calculateProductivity();
+  }
+  
+  void calculateProductivity() {
+    // Logic here
+  }
+}
+```
+
+## Data Flow
+
+### Study Session Update Flow
+```
+UI Input (Manual Entry)
+    ↓
+HomeScreen._handleAddStudyHours()
+    ↓
+Update local state
+    ↓
+Calculate productivity
+    ↓
+UI Rebuild (PieChart updates)
+    ↓
+(Future) Send to Firestore
+```
+
+### Chat Message Flow
+```
+User Types Message
+    ↓
+ChatService.sendMessage()
+    ↓
+Firebase Firestore (Real-time listener)
+    ↓
+Message appears in UI
+    ↓
+Mark as read
+```
+
+## Firebase Integration
+
+### Firestore Collection Structure
+```
+users/
+  ├── {userId}
+  │   ├── email
+  │   ├── fullName
+  │   ├── profilePhotoUrl
+  │   ├── bio
+  │   └── createdAt
+
+studySessions/
+  ├── {sessionId}
+  │   ├── userId
+  │   ├── studyHours
+  │   ├── screenTime
+  │   ├── date
+  │   └── productivityPercentage
+
+messages/
+  ├── {chatId}
+  │   ├── senderId
+  │   ├── receiverId
+  │   ├── text
+  │   ├── timestamp
+  │   └── isRead
+
+notes/
+  ├── {noteId}
+  │   ├── userId
+  │   ├── title
+  │   ├── content
+  │   ├── visibility
+  │   ├── sharedWithUsers
+  │   └── createdAt
+
+stories/
+  ├── {storyId}
+  │   ├── userId
+  │   ├── content
+  │   ├── createdAt
+  │   ├── expiresAt
+  │   └── viewedBy
+
+friendRequests/
+  ├── {requestId}
+  │   ├── senderId
+  │   ├── receiverId
+  │   ├── status
+  │   └── createdAt
+```
+
+## Error Handling Strategy
+
+### Current Implementation
+- Try-catch blocks in services
+- SnackBar notifications for user feedback
+- Graceful fallbacks
+
+### Best Practices
+1. Log errors to Crashlytics
+2. Show appropriate user messages
+3. Provide retry mechanisms
+4. Track error patterns
+
+## Performance Optimization
+
+### UI Performance
+- Page building happens once
+- Scroll performance with `ListView.builder()`
+- Image caching with `CachedNetworkImage`
+- Lazy loading of tabs
+
+### Data Performance
+- Pagination for lists
+- Efficient Firestore queries with indexes
+- Local caching with Hive
+- Debouncing for search
+
+## Security Implementation
+
+### Authentication
+- Firebase Auth with email/password
+- Role-based access control (Admin/User)
+- Secure token storage
+
+### Data Privacy
+- Private notes with user selection
+- Firestore security rules
+- Encrypted network communication
+
+## Testing Strategy
+
+### Unit Tests
+```dart
+test('Calculate productivity correctly', () {
+  double productivity = calculateProductivity(2.0, 4.0);
+  expect(productivity, 33.33);
+});
+```
+
+### Widget Tests
+```dart
+testWidgets('Login button triggers login', (WidgetTester tester) async {
+  await tester.pumpWidget(const MyApp());
+  await tester.tap(find.byIcon(Icons.login));
+  await tester.pumpAndSettle();
+});
+```
+
+## Deployment Considerations
+
+### Android Build
+- Sign APK/AAB with keystore
+- Configure proguard rules
+- Minimize APK size
+- Test on various devices
+
+### iOS Build  
+- Certificate configuration
+- Bundle ID setup
+- Privacy permissions
+
+## Future Architecture Improvements
+
+1. **Repository Pattern**
+   - Separate data layer completely
+   - Multiple data sources support
+
+2. **Dependency Injection**
+   - GetIt for service locator
+   - Automatic factory registration
+
+3. **Event Bus**
+   - App-wide event streaming
+   - Better component communication
+
+4. **Bloc Pattern**
+   - Alternative to GetX for complex states
+   - Better testability
+
+5. **Feature-First Structure**
+   - Organize by features instead of layers
+   - Self-contained feature modules
+
+## Code Style Guide
+
+### Naming Conventions
+- Classes: `PascalCase` (HomeScreen)
+- Variables: `camelCase` (screenTime)
+- Constants: `camelCase` (appName)
+- Private: Prefix with `_` (_controller)
+
+### Best Practices
+1. Use const constructors
+2. Dispose resources properly
+3. Add comments for complex logic
+4. Keep functions small and focused
+5. Use meaningful variable names
 
 ---
 
-## Database Relationships
-
-```
-┌─────────────────────────────────────────────────────────┐
-│              Entity Relationship Diagram                │
-└─────────────────────────────────────────────────────────┘
-
-users (1) ──→ (N) activities
-   │
-   ├─→ (N) goals
-   │
-   ├─→ (N) notes
-   │
-   ├─→ (N) memories
-   │
-   ├─→ (N) messages (as sender)
-   │
-   ├─→ (N) messages (as recipient)
-   │
-   ├─→ (N) friends (friend requests)
-   │
-   └─→ (N) analytics
-
-notes (1) ──→ (N) shared_notes
-   │
-   └─→ (N) users (through shared_notes)
-
-messages (N) ←─→ (N) users
-   │
-   ├─ sender_id → users.id
-   └─ recipient_id → users.id
-
-friends relations:
-   users (1) ──→ (N) friends.user_id
-   users (1) ──→ (N) friends.friend_id
-```
-
----
-
-## Request/Response Cycle
-
-```
-Step 1: Frontend
-├─ Component calls API function
-├─ Example: activitiesAPI.getActivities()
-└─ Axios creates HTTP request
-
-Step 2: Request Interceptor
-├─ Get token from AsyncStorage
-├─ Add Authorization header
-└─ Set Content-Type
-
-Step 3: Network
-├─ Request travels over HTTP/HTTPS
-├─ URL: http://localhost:5000/api/activities
-└─ Method: GET/POST/PUT/DELETE
-
-Step 4: Backend Express Server
-├─ Route handler receives request
-├─ Middleware stack processes:
-│  ├─ CORS check
-│  ├─ Auth verification
-│  └─ Input validation
-└─ Business logic executes
-
-Step 5: Database Query
-├─ PostgreSQL client executes query
-├─ Fetch data from tables
-└─ Return results to handler
-
-Step 6: Response Generation
-├─ Format response object
-├─ Add status code (200, 400, 500)
-└─ Serialize to JSON
-
-Step 7: Response Interceptor
-├─ Check status code
-├─ Handle errors globally
-└─ Pass to calling code
-
-Step 8: Frontend Processing
-├─ Update component state
-├─ Re-render UI
-├─ Show success/error message
-└─ Update async storage if needed
-```
-
----
-
-## Error Handling
-
-```
-Frontend Level
-├─ Form validation
-├─ Network error catching
-├─ User feedback (Alert)
-└─ Loading state management
-
-Backend Level
-├─ Input validation (express-validator)
-├─ JWT verification
-├─ Database constraints
-├─ Error middleware
-└─ JSON response with code/message
-```
-
----
-
-## Scalability Considerations
-
-| Aspect | Current | Future |
-|--------|---------|--------|
-| Users | Small group | 1000s |
-| Activities | Per user | Archive old |
-| Messages | Short term | Archive |
-| Analytics | Real-time calc | Pre-computed |
-| Images | Local storage | Cloud (S3) |
-| Database | Single | Replicas |
-
----
-
-## Security Layers
-
-```
-Layer 1: Transport
-├─ HTTPS in production
-└─ Encrypted data in transit
-
-Layer 2: Authentication
-├─ JWT tokens
-├─ Password hashing
-└─ Secure storage
-
-Layer 3: Authorization
-├─ User can access own data
-├─ Friends only for shared data
-└─ Admin functions
-
-Layer 4: Data Validation
-├─ Input sanitization
-├─ Type checking
-└─ Length limits
-
-Layer 5: API Security
-├─ Rate limiting (future)
-├─ CORS enabled
-└─ Error hiding
-```
-
----
-
-This architecture provides a robust, scalable foundation for the Study Buddy application!
+**Last Updated**: February 2026

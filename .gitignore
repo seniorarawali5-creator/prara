@@ -1,71 +1,146 @@
-# Dependencies
-node_modules/
-/.pnp
-.pnp.js
+# Flutter and Dart
+.dart_tool/
+.flutter/
+*.flutter-completion
 
-# Testing
-/coverage
+# Build outputs
+build/
+*.apk
+*.app
+*.bundle
+*.ipa
+*.dSYM/
 
-# Production
-/build
-/dist
+# Web
+web/index.html
 
-# Misc
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+# iOS
+ios/.symlinks/
+ios/.generated/
+ios/Flutter/Flutter.framework
+ios/Flutter/Flutter.podspec
+ios/Flutter/Generated.xcconfig
+ios/Flutter/ephemeral/
+ios/Flutter/app.flx
+ios/Flutter/app.zip
+ios/Flutter/flutter_assets/
+ios/Flutter/flutter_export_environment.sh
+ios/ServiceDefinitions.json
+ios/Runner/GeneratedPluginRegistrant.*
 
-# Logs
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-lerna-debug.log*
+# Android
+android/local.properties
+android/app/debug
+android/app/release
+android/.gradle/
+android/.idea/
+*.gradle
+*.gradle.kts
+flutter_*.jar
+GeneratedPluginRegistrant.java
 
-# OS Files
-.DS_Store
-Thumbs.db
+# Firebase and Google Services
+google-services.json
+GoogleService-Info.plist
+lib/firebase_options.dart
 
 # IDE
 .vscode/
 .idea/
+*.iml
+*.iws
 *.swp
 *.swo
-*.swn
+*~
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
 
-# Uploads
-uploads/
-/uploads/
+# Environment
+.env
+.env.local
+.env.*.local
 
-# Database
-*.db
-*.sqlite
-*.sqlite3
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+*.mode1v3
+*.mode2v3
+*.moved-aside
+*.pbxuser
+*.perspectivev3
+**/*sync/
+.sconsign.dblite
+.tags*
+.vscode-settings.json
+.vscode/launch.json
+.vscode/extensions.json
+profile
 
-# Cache
-.eslintcache
-.node_repl_history
+# Linux
+snap/
+snapcraft.yaml
 
-# Expo
-.expo/
-dist/
-npm-debug.*
-*.jks
-*.p8
-*.p12
-*.key
-*.mobileprovision
-*.orig.*
-web-build/
+# Windows
+windows/flutter/generated_plugins.cmake
+windows/flutter/generated_plugin_symlink_group
 
-# React Native
-.gradle
-.m2
-local.properties
+# Temporary files
+*.tmp
+*.temp
 *.log
-*.aar
+*.swp
 
-# Pods
-Pods/
-*.xcworkspace
+# Python
+*.pyc
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Node
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Package files
+pubspec.lock
+
+# Coverage
+coverage/
+
+# Translations
+.dart_locales/
+
+# Misc
+.gradle/
+KeyStore/
+.jks/
+
+# CI/CD
+.circleci/
+.github/workflows/secrets
+.travis/
+.gitlab-ci-variables
+
+# Secrets
+*.key
+*.cert
+*.p12
+*.pfx
+!README*
+secrets/
+
+# Local overrides
+local.properties
+.local
+
+# Generated files that should be committed
+!.gitkeep
+!.gitignore
+
+# Uncomment patterns for files that should be checked in
+# !pubspec.lock

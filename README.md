@@ -1,400 +1,323 @@
-# Study Buddy - Educational Collaboration Platform
+# Prashant - Productivity & Social Accountability App
 
-एक व्यापक शिक्षा सहयोग प्लेटफॉर्म जहाँ आप और आपके दोस्त मिलकर पढ़ाई कर सकते हैं, एक दूसरे को ट्रैक कर सकते हैं, और अपनी प्रगति साझा कर सकते हैं।
+A modern Flutter application that combines personal productivity tracking with social features for accountability and motivation.
 
-## Features (सुविधाएं)
+## 🎯 App Features
 
-### 🔐 Authentication
-- Real signup/signin system
-- JWT token-based authentication
-- Secure password hashing with bcryptjs
+### 1. **Authentication System**
+- **Landing Screen**: Choose between Admin or User login
+- **User Login**: Email + Password authentication
+- **User Sign Up**: Email, Mobile, Full Name, Password
+- **Forgot Password**: Email-based password recovery
+- **Admin Login**: Special admin interface for analytics and user management
+- **Role-based Access**: Admin and User roles with different permissions
 
-### 📚 Activity Management
-- Add daily study activities
-- Track subjects and topics studied
-- Monitor study duration
-- Categorize activities (study, exercise, project, etc.)
+### 2. **Screen Time Tracking**
+- Automatic daily mobile screen usage tracking
+- Display today's, weekly, and monthly screen time statistics
+- Integration with Android Usage Stats API
+- Visual representation with charts
 
-### 📊 Analytics
-- Weekly study analytics
-- Monthly progress reports
-- Subject-wise study breakdown
-- Group performance comparison
-- Visual charts and graphs
+### 3. **Home Screen (Core Feature)**
+- Manual entry of daily study hours
+- Auto-calculated remaining hours (24h - screen time)
+- Visual analytics with pie charts:
+  - Daily progress breakdown
+  - Weekly trends
+  - Monthly comparison
+- Productivity percentage calculation
 
-### 🎯 Goals Management
-- Set weekly and monthly goals
-- Track goal progress
-- Monitor goal completion
-- Update goal status
+### 4. **Chat Section**
+- **Direct Messaging**:
+  - One-to-one chats with read status
+  - Text messages
+  - Image/PDF/File sharing
+  - Online status indicator
+  
+- **Group Chat**:
+  - Create and manage groups
+  - Add/remove members
+  - Group messaging
 
-### 📝 Shared Notes
-- Create and manage personal notes
-- Share notes with friends
-- Organize notes by subject
-- Edit and delete notes
+### 5. **Friends Section**
+- Browse all registered users
+- Send/Accept/Reject friend requests
+- View mutual friends count
+- Online status indicator
+- Quick access to chat with friends
+- Friend request management with notifications
 
-### 📸 Memories
-- Share photos and memories
-- Build a study journey album
-- View friends' memories (if friends)
-- Organize memories by date
+### 6. **Notes Section**
+- Create and manage notes
+- Upload notes, images, and PDFs
+- Visibility options:
+  - **Public**: Visible to all users
+  - **Private**: Only selected users can view
+- Share notes with specific users
+- Filter by visibility type
+- View note metadata (author, creation date, attachments)
 
-### 💬 Real-time Chat
-- Direct messaging with friends
-- Socket.io powered real-time updates
-- Message history
-- Typing indicators
-- Unread message count
+### 7. **Analytics Dashboard**
+- **Weekly View**:
+  - Study hours vs Screen time comparison
+  - Daily breakdown
+  - Trend analysis
 
-### 👥 Friends System
-- Add and manage friends
-- Friend requests (pending/accepted)
-- Search for users
-- View friends' analytics
-- Compare progress with friends
+- **Monthly View**:
+  - Week-by-week comparison
+  - Performance summaries
+  - Productivity insights
 
----
+### 8. **Stories Feature**
+- Upload image/text stories like Instagram
+- Stories visible for 24 hours
+- View status tracking
+- Social sharing of daily achievements
 
-## Project Structure
+### 9. **Settings**
+- Edit profile information
+- Change password
+- Upload profile photo
+- Dark/Light mode toggle
+- Push notification preferences
+- About & Legal documents
+- Logout functionality
+
+### 10. **Admin Dashboard**
+- View total registered users
+- Track active vs inactive users
+- Average screen time across platform
+- Average study hours statistics
+- Recent users list
+- User distribution charts
+- User management capabilities
+
+## 📁 Project Structure
 
 ```
-kriara/
-├── backend/                   # Node.js + Express Server
-│   ├── config/
-│   │   └── database.js       # Database connection
-│   ├── database/
-│   │   └── schema.sql        # PostgreSQL schema
-│   ├── middleware/
-│   │   └── auth.js           # JWT authentication
-│   ├── routes/
-│   │   ├── auth.js           # Sign in/up
-│   │   ├── activities.js      # Activity CRUD
-│   │   ├── goals.js          # Goals CRUD
-│   │   ├── notes.js          # Notes sharing
-│   │   ├── memories.js       # Image uploads
-│   │   ├── messages.js       # Chat
-│   │   ├── users.js          # Friends management
-│   │   └── analytics.js      # Analytics
-│   ├── utils/
-│   │   └── auth.js           # Password hashing, JWT
-│   ├── server.js             # Main server file
-│   ├── package.json
-│   └── .env                  # Environment variables
-│
-└── frontend/                  # React Native App
-    ├── src/
-    │   ├── api/
-    │   │   └── client.js      # API requests
-    │   ├── context/
-    │   │   └── AuthContext.js # Authentication state
-    │   ├── navigation/
-    │   │   └── Navigation.js   # App navigation
-    │   ├── screens/
-    │   │   ├── auth/
-    │   │   │   ├── SigninScreen.js
-    │   │   │   └── SignupScreen.js
-    │   │   └── app/
-    │   │       ├── HomeScreen.js
-    │   │       ├── AddActivityScreen.js
-    │   │       ├── AnalyticsScreen.js
-    │   │       ├── NotesScreen.js
-    │   │       ├── AddNoteScreen.js
-    │   │       ├── MemoriesScreen.js
-    │   │       ├── ChatListScreen.js
-    │   │       ├── ChatScreen.js
-    │   │       └── FriendsScreen.js
-    ├── App.js                 # Entry point
-    ├── app.json               # Expo configuration
-    ├── package.json
-    └── .env                   # Environment variables
+lib/
+├── main.dart                           # App entry point
+├── config/
+│   ├── theme.dart                     # Theme configuration
+│   └── app_routes.dart                # Route management
+├── models/
+│   ├── user_model.dart
+│   ├── study_session_model.dart
+│   ├── chat_message_model.dart
+│   ├── note_model.dart
+│   ├── story_model.dart
+│   └── friend_request_model.dart
+├── screens/
+│   ├── auth/
+│   │   ├── splash_screen.dart
+│   │   ├── login_options_screen.dart
+│   │   ├── login_screen.dart
+│   │   ├── signup_screen.dart
+│   │   ├── forgot_password_screen.dart
+│   │   └── admin_login_screen.dart
+│   ├── home/
+│   │   └── home_screen.dart
+│   ├── chat/
+│   │   └── chat_screen.dart
+│   ├── friends/
+│   │   └── friends_screen.dart
+│   ├── notes/
+│   │   └── notes_screen.dart
+│   ├── analytics/
+│   │   └── analytics_screen.dart
+│   ├── stories/
+│   │   └── stories_screen.dart
+│   ├── settings/
+│   │   └── settings_screen.dart
+│   ├── admin/
+│   │   └── admin_dashboard_screen.dart
+│   └── main_navigation_screen.dart
+├── services/
+│   ├── auth_service.dart
+│   ├── analytics_service.dart
+│   └── chat_service.dart
+├── widgets/
+│   └── [Reusable components]
+├── utils/
+│   └── [Helper functions]
+└── constants/
+    ├── colors.dart
+    ├── strings.dart
+    └── assets.dart
 ```
 
----
+## 🎨 UI/UX Features
 
-## Setup Instructions
+- **Modern Minimal Design**: Clean interface with intuitive navigation
+- **Smooth Animations**: Fluid transitions and micro-interactions
+- **Gradient Cards**: Beautiful gradient backgrounds
+- **Rounded Corners**: Soft, modern UI elements
+- **Color Scheme**:
+  - Primary: Indigo (#6366F1)
+  - Secondary: Violet (#8B5CF6)
+  - Tertiary: Pink (#EC4899)
+  - Success: Green (#10B981)
+  - Warning: Amber (#F59E0B)
+
+- **Bottom Navigation**: 7-tab navigation for easy access
+  - Home
+  - Chat
+  - Friends
+  - Notes
+  - Stories
+  - Analytics
+  - Settings
+
+## 🛠 Tech Stack
+
+- **Frontend**: Flutter 3.0+
+- **State Management**: Provider + GetX
+- **Backend**: Firebase (Authentication, Firestore, Storage)
+- **Charts**: FL Chart
+- **Local Storage**: Shared Preferences, Hive
+- **Notifications**: Firebase Messaging, Flutter Local Notifications
+- **Threading**: Dart async/await
+
+## 📱 Dependencies
+
+Key packages used:
+- `firebase_auth`: Authentication
+- `firebase_firestore`: Real-time database
+- `firebase_storage`: File storage
+- `fl_chart`: Beautiful charts
+- `GetX`: State management & routing
+- `image_picker`: Media selection
+- `file_picker`: File handling
+- `cached_network_image`: Image caching
+- `intl`: Internationalization
+- `app_usage`: Screen time tracking
+
+## 🚀 Getting Started
 
 ### Prerequisites
-- Node.js (v14 or higher)
-- PostgreSQL (v12 or higher)
-- Expo CLI (`npm install -g expo-cli`)
-- React Native development tools
+- Flutter SDK 3.0+
+- Dart 3.0+
+- Android Studio / Xcode
+- Firebase account
 
-### Backend Setup
+### Installation
 
-1. **Install Dependencies**
+1. **Clone the repository**
    ```bash
-   cd backend
-   npm install
+   git clone https://github.com/yourusername/prashant.git
+   cd prashant
    ```
 
-2. **Setup Database**
-   - Create a PostgreSQL database named `study_buddy`
-   - Run the schema file:
-     ```bash
-     psql -U postgres -d study_buddy -f database/schema.sql
-     ```
-
-3. **Configure Environment**
-   - Edit `.env` file:
-     ```
-     DB_HOST=localhost
-     DB_USER=postgres
-     DB_PASSWORD=your_password
-     DB_NAME=study_buddy
-     DB_PORT=5432
-     JWT_SECRET=your_secret_key_change_in_production
-     PORT=5000
-     ```
-
-4. **Start Server**
+2. **Install dependencies**
    ```bash
-   npm run dev   # Development with auto-reload
-   # or
-   npm start     # Production
-   ```
-   Server will run on `http://localhost:5000`
-
-### Frontend Setup
-
-1. **Install Dependencies**
-   ```bash
-   cd frontend
-   npm install
+   flutter pub get
    ```
 
-2. **Configure Environment**
-   - Edit `.env` file:
-     ```
-     API_BASE_URL=http://your_machine_ip:5000
-     SOCKET_URL=http://your_machine_ip:5000
-     ```
+3. **Setup Firebase**
+   - Create a Firebase project
+   - Download `google-services.json` (Android)
+   - Download `GoogleService-Info.plist` (iOS)
+   - Place in respective platform folders
 
-3. **Start App**
+4. **Run the app**
    ```bash
-   npm start                  # Start Expo
-   npx expo start --web       # Web version
-   npx react-native run-android  # Android
-   npx react-native run-ios   # iOS (Mac only)
+   flutter run
    ```
 
----
+## 📊 Screen Time Tracking Integration
 
-## API Endpoints
+The app uses Android's Usage Stats API to:
+- Fetch hourly screen usage data
+- Track app-specific usage
+- Display today's, weekly, and monthly statistics
+- Calculate productivity metrics
 
-### Authentication
-- `POST /api/auth/signup` - Create account
-- `POST /api/auth/signin` - Login
+## 🔐 Security Features
 
-### Activities
-- `POST /api/activities` - Add activity
-- `GET /api/activities` - Get activities
-- `PUT /api/activities/:id` - Update activity
-- `DELETE /api/activities/:id` - Delete activity
+- Email/Password authentication via Firebase
+- Role-based access control
+- Private/Public note visibility
+- Selected user sharing for notes
+- Secure file storage with Firebase
 
-### Goals
-- `POST /api/goals` - Create goal
-- `GET /api/goals` - Get goals
-- `PUT /api/goals/:id/progress` - Update progress
-- `PUT /api/goals/:id/status` - Update status
-- `DELETE /api/goals/:id` - Delete goal
+## 📈 Analytics Implementation
 
-### Notes
-- `POST /api/notes` - Create note
-- `GET /api/notes` - Get user's notes
-- `GET /api/notes/shared` - Get shared notes
-- `POST /api/notes/:id/share` - Share note
-- `PUT /api/notes/:id` - Update note
-- `DELETE /api/notes/:id` - Delete note
+- Real-time study hour tracking
+- Screen time correlation analysis
+- Weekly and monthly trend visualization
+- Personal productivity scoring
+- Comparative analytics dashboard (Admin)
 
-### Memories
-- `POST /api/memories` - Upload memory
-- `GET /api/memories` - Get user's memories
-- `GET /api/memories/friend/:friendId` - Get friend's memories
-- `DELETE /api/memories/:id` - Delete memory
+## 🎯 Future Enhancements
 
-### Messages
-- `POST /api/messages` - Send message
-- `GET /api/messages/conversation/:userId` - Get conversation
-- `GET /api/messages` - Get all conversations
-- `GET /api/messages/unread/count` - Get unread count
-- `DELETE /api/messages/:id` - Delete message
+- [ ] Social media integration (Share achievements)
+- [ ] Leaderboard system
+- [ ] AI-powered productivity insights
+- [ ] Video streaming for study sessions
+- [ ] Integration with popular learning platforms
+- [ ] Push notifications for reminders
+- [ ] Voice messages in chat
+- [ ] GIF/Emoji support
+- [ ] Report generation
+- [ ] Premium features
 
-### Users & Friends
-- `GET /api/users/profile/:userId` - Get user profile
-- `GET /api/users/search` - Search users
-- `POST /api/users/:userId/friend-request` - Send friend request
-- `PUT /api/users/:requestId/accept` - Accept request
-- `GET /api/users/list` - Get friends list
-- `GET /api/users/requests/pending` - Get pending requests
-- `DELETE /api/users/:friendId` - Remove friend
+## 📝 Dummy Data
 
-### Analytics
-- `GET /api/analytics/weekly` - Weekly analytics
-- `GET /api/analytics/monthly` - Monthly analytics
-- `GET /api/analytics/subject` - Subject-wise breakdown
-- `GET /api/analytics/group/comparison` - Group comparison
+All screens include realistic dummy data for testing:
+- Sample users with online status
+- Study session data
+- Chat conversations
+- Notes with various visibility levels
+- Stories with expiry dates
+- Analytics data for visualization
 
----
+## 🔄 State Management Flow
 
-## Technology Stack
+```
+User Input → Controller/Service → Model Update → UI Rebuild
+```
 
-### Backend
-- **Framework**: Express.js
-- **Database**: PostgreSQL
-- **Authentication**: JWT + bcryptjs
-- **Real-time**: Socket.io
-- **File Upload**: Multer
-- **Validation**: express-validator
+All screens use GetX for:
+- Simple state management
+- Route navigation
+- Dependency injection
+- SnackBars and dialogs
 
-### Frontend
-- **Framework**: React Native (Expo)
-- **Navigation**: React Navigation
-- **HTTP Client**: Axios
-- **Charts**: react-native-chart-kit
-- **Storage**: AsyncStorage
-- **Icons**: Material Icons
-- **Real-time**: socket.io-client
+## 📱 App Navigation
 
----
+The app uses a 7-tab bottom navigation system:
 
-## Key Features Explained
+1. **Home**: Daily tracking and pie charts
+2. **Chat**: Direct and group messaging
+3. **Friends**: User discovery and management
+4. **Notes**: Create and share notes
+5. **Stories**: 24-hour stories like Instagram
+6. **Analytics**: Weekly/monthly comparisons
+7. **Settings**: User preferences and profile
 
-### 1. Activity Tracking
-Users can log daily study sessions with:
-- Title and description
-- Subject and duration
-- Activity category
-- Automatic timestamp
+## 🎓 Learning Resources
 
-### 2. Analytics Dashboard
-- Weekly hour totals with charts
-- Subject-wise breakdown
-- Goal completion tracking
-- Friend group comparisons
+This app demonstrates:
+- Flutter best practices
+- Firebase integration
+- GetX state management
+- Complex UI layouts
+- Data visualization with FL Chart
+- Authentication flows
+- Real-time features
 
-### 3. Goal Setting
-- Create weekly/monthly goals
-- Set target hours or items
-- Track progress visually
-- Update completion status
-
-### 4. Notes Sharing
-- Create rich-text notes
-- Share with specific friends
-- Organize by subject
-- Edit and delete anytime
-
-### 5. Memory Board
-- Upload study journey photos
-- Add titles and descriptions
-- View friend memories
-- Date-organized timeline
-
-### 6. Real-time Chat
-- Direct messaging
-- Live notifications
-- Typing indicators
-- Message history
-
-### 7. Friends System
-- Request/accept friends
-- Search user database
-- View friend profiles
-- Compare statistics
-
----
-
-## Security Considerations
-
-1. **JWT Tokens**
-   - 7-day expiration
-   - Stored securely in AsyncStorage
-   - Auto-included in all requests
-
-2. **Password Security**
-   - Bcryptjs hashing (10 salt rounds)
-   - Never stored in plain text
-   - Secure comparison on login
-
-3. **Data Privacy**
-   - User can only access own data
-   - Shared notes only with accepted friends
-   - Messages encrypted in transit
-
-4. **Validation**
-   - Input validation on all endpoints
-   - Field length restrictions
-   - Email format validation
-
----
-
-## Troubleshooting
-
-### Database Connection Error
-- Check PostgreSQL is running
-- Verify credentials in `.env`
-- Ensure database exists
-
-### App Won't Connect to Backend
-- Check IP address in frontend `.env`
-- Firewall might be blocking port 5000
-- Ensure backend server is running
-
-### Image Upload Fails
-- Check `uploads/memories` folder exists
-- Verify file size limits
-- Check file permissions
-
-### Socket.io Real-time Issues
-- Verify socket URL matches backend
-- Check WebSocket support
-- Restart Expo app
-
----
-
-## Future Enhancements
-
-- [ ] Group study sessions
-- [ ] Voice/video calls
-- [ ] Study reminders and notifications
-- [ ] Achievement badges
-- [ ] Leaderboards
-- [ ] Study timer/Pomodoro
-- [ ] Offline mode
-- [ ] Dark theme
-- [ ] Advanced search filters
-- [ ] Content recommendation
-
----
-
-## Contributing
-
-Feel free to contribute by:
-1. Finding bugs and reporting
-2. Suggesting features
-3. Submitting pull requests
-4. Improving documentation
-
----
-
-## License
+## 📄 License
 
 This project is open source and available under the MIT License.
 
+## 👥 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## 📞 Support
+
+For support, email support@prashant.app or open an issue on GitHub.
+
 ---
 
-## Support
-
-For issues and questions:
-- Check existing documentation
-- Search GitHub issues
-- Create a new issue with details
-
----
-
-## Authors
-
-Created as a comprehensive educational collaboration platform.
-
-**Happy Studying! 📚✨**
+**Built with ❤️ for productivity and accountability**

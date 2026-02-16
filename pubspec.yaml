@@ -1,0 +1,58 @@
+name: prashant
+description: A modern productivity and social accountability app with screen time tracking, study hours, and social features.
+
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  # State Management
+  provider: ^6.0.0
+  get: ^4.6.5
+  
+  # UI & Animations
+  fl_chart: ^0.63.0
+  shimmer: ^3.0.0
+  lottie: ^2.4.0
+  
+  # Supabase (Database, Auth, Storage)
+  supabase_flutter: ^2.0.0
+  
+  # Networking
+  http: ^1.1.0
+  dio: ^5.3.0
+  
+  # Local Storage
+  shared_preferences: ^2.2.0
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+  
+  # File & Media Handling
+  image_picker: ^1.0.0
+  video_player: ^2.8.0
+  permission_handler: ^11.4.0
+  
+  # Notifications
+  flutter_local_notifications: ^17.0.0
+  
+  # Utilities
+  intl: ^0.19.0
+  uuid: ^4.0.0
+  logger: ^2.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
+
+  # Assets and custom fonts removed for CI build convenience.
+  # Add back under `flutter:` when the referenced files exist in the project.

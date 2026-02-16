@@ -1,0 +1,170 @@
+// Firestore Security Rules for Prashant App
+// Deploy this to Firebase Console > Firestore Database > Rules
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Users collection - Each user can only read/write their own data
+    match /users/{userId} {
+      // Any authenticated user can create their own user document
+      allow create: if request.auth.uid == userId;
+      
+      // Users can read their own data
+      allow read: if request.auth.uid == userId;
+      
+      // Users can update their own profile
+      allow update: if request.auth.uid == userId;
+      
+      // Users cannot delete their own account (prevent accidental deletion)
+      allow delete: if false;
+      
+      // Study sessions subcollection
+      match /study_sessions/{sessionId} {
+        allow create: if request.auth.uid == userId;
+        allow read: if request.auth.uid == userId;
+        allow update: if request.auth.uid == userId;
+        allow delete: if request.auth.uid == userId;
+      }
+      
+      // Screen time subcollection
+      match /screen_time/{screenTimeId} {
+        allow create: if request.auth.uid == userId;
+        allow read: if request.auth.uid == userId;
+        allow update: if request.auth.uid == userId;
+        allow delete: if request.auth.uid == userId;
+      }
+      
+      // Notes subcollection
+      match /notes/{noteId} {
+        allow create: if request.auth.uid == userId;
+        allow read: if request.auth.uid == userId || resource.data.isPublic == true;
+        allow update: if request.auth.uid == userId;
+        allow delete: if request.auth.uid == userId;
+      }
+    }
+    
+    // Direct messages collection
+    match /chats/{chatId} {
+      // Only participants can access the chat
+      allow read, write: if request.auth.uid in resource.data.participants;
+      
+      // Messages subcollection
+      match /messages/{messageId} {
+        // Only participants can read/write messages
+        allow create: if request.auth.uid in get(/databases/$(database)/documents/chats/$(chatId)).data.participants;
+        allow read: if request.auth.uid in get(/databases/$(database)/documents/chats/$(chatId)).data.participants;
+        allow update: if request.auth.uid == resource.data.senderId;
+        allow delete: if request.auth.uid == resource.data.senderId;
+      }
+    }
+    
+    // Group chats collection
+    match /groups/{groupId} {
+      // Group members can read group info
+      allow read: if request.auth.uid in resource.data.members;
+      
+      // Only admin can update group info
+      allow update: if request.auth.uid == resource.data.adminId;
+      
+      // Messages subcollection
+      match /messages/{messageId} {
+        // Group members can read messages
+        allow read: if request.auth.uid in get(/databases/$(database)/documents/groups/$(groupId)).data.members;
+        
+        // Group members can create messages
+        allow create: if request.auth.uid in get(/databases/$(database)/documents/groups/$(groupId)).data.members;
+        
+        // Users can update/delete only their own messages
+        allow update, delete: if request.auth.uid == resource.data.senderId;
+      }
+    }
+    
+    // Stories collection
+    match /stories/{storyId} {
+      // Users can create their own stories
+      allow create: if request.auth.uid == request.resource.data.userId;
+      
+      // Stories are readable by all authenticated users
+      allow read: if request.auth.uid != null;
+      
+      // Users can delete their own stories
+      allow delete: if request.auth.uid == resource.data.userId;
+      
+      // No updates allowed to stories
+      allow update: if false;
+    }
+    
+    // Friend requests collection
+    match /friend_requests/{requestId} {
+      // Users can create friend requests
+      allow create: if request.auth.uid == request.resource.data.senderId;
+      
+      // Sender and receiver can read the request
+      allow read: if request.auth.uid == resource.data.senderId || 
+                     request.auth.uid == resource.data.receiverId;
+      
+      // Only receiver can update status (accept/reject)
+      allow update: if request.auth.uid == resource.data.receiverId;
+      
+      // Sender can delete their own request, receiver can delete after accepting/rejecting
+      allow delete: if request.auth.uid == resource.data.senderId ||
+                       request.auth.uid == resource.data.receiverId;
+    }
+    
+    // Friends list collection
+    match /friendships/{friendshipId} {
+      // Users involved in friendship can read
+      allow read: if request.auth.uid in resource.data.userIds;
+      
+      // Only one of the friends can delete
+      allow delete: if request.auth.uid in resource.data.userIds;
+      
+      // No updates or creates through direct document access
+      allow create, update: if false;
+    }
+    
+    // User activity feed
+    match /activity/{activityId} {
+      // Users can read their own activity
+      allow read: if request.auth.uid == resource.data.userId;
+      
+      // Only server functions can write
+      allow write: if false;
+    }
+    
+    // Notifications collection
+    match /notifications/{notificationId} {
+      // Users can only read their own notifications
+      allow read: if request.auth.uid == resource.data.userId;
+      
+      // Users can mark their notifications as read
+      allow update: if request.auth.uid == resource.data.userId &&
+                       request.resource.data.isRead == true &&
+                       resource.data.userId == request.resource.data.userId;
+      
+      // Users can delete their own notifications
+      allow delete: if request.auth.uid == resource.data.userId;
+      
+      // Only server functions can create
+      allow create: if false;
+    }
+    
+    // Admin collection - Only admins can access
+    match /admin/{adminId} {
+      allow read, write: if request.auth.uid == adminId && 
+                            get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+    
+    // Public data collection - Anyone can read
+    match /public_data/{dataId} {
+      allow read: if request.auth.uid != null;
+      allow write: if false;
+    }
+    
+    // Deny all other access
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
